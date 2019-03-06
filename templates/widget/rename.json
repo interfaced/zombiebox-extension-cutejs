@@ -1,0 +1,5 @@
+{
+  "widget.js": "<%= slug %>.js",
+  "widget.jst": "<%= slug %>.jst",
+  "widget.css": "<%= slug %>.css"
+}

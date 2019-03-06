@@ -1,0 +1,5 @@
+{
+	"scene.js": "<%= slug %>.js",
+	"scene.jst": "<%= slug %>.jst",
+	"scene.css": "<%= slug %>.css"
+}
