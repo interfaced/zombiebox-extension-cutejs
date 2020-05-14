@@ -1,4 +1,4 @@
-import AbstractCuteScene from 'cutejs/layers/abstract-cute-scene';
+import AbstractCuteScene from 'cutejs/layers/abstract-scene';
 import {render, Out} from 'generated/cutejs/<%= componentName %>/scenes/<%= slug %>/<%= slug %>.jst';
 
 

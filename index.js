@@ -1,10 +1,17 @@
-const path = require('path');
-const fs = require('fs');
-const CuteJS = require('cutejs');
-const EventEmitter = require('events');
+/*
+ * This file is part of the ZombieBox package.
+ *
+ * Copyright (c) 2019, Interfaced
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
-const IZBSourceProvider = require('zombiebox/lib/interfaces/i-source-provider');
-const IZBExtension = require('zombiebox/lib/interfaces/i-zb-extension');
+const path = require('path');
+const fse = require('fs-extra');
+const CuteJS = require('cutejs');
+
+const {AbstractExtension, ISourceProvider} = require('zombiebox');
 
 /**
  * @param {string} filePath
@@ -15,7 +22,7 @@ function isJST(filePath) {
 }
 
 /**
- * @param {IZBSourceProvider} source
+ * @param {ISourceProvider} source
  * @return {Array<string>}
  */
 function getJSTFiles(source) {
@@ -24,51 +31,20 @@ function getJSTFiles(source) {
 
 
 /**
- * @implements {IZBExtension}
  */
-module.exports = class extends EventEmitter {
+module.exports = class extends AbstractExtension {
 	/**
-	 * @override
 	 */
-	setApplication(zb) {
-		const cutejs = new CuteJS();
-		cutejs.clientLibImportPath = 'cutejs-lib/cute-library';
-
-		/**
-		 * @type {ZBApplication}
-		 * @private
-		 */
-		this._zb = zb;
+	constructor() {
+		super();
 
 		/**
 		 * @type {CuteJS}
 		 * @private
 		 */
-		this._cutejs = cutejs;
-	}
+		this._cutejs = new CuteJS();
 
-	/**
-	 * @override
-	 */
-	generateCode(projectConfig) {
-		return Array.from(this._zb.getCodeSource().aliasedSources)
-			.reduce((result, [alias, fsSource]) => {
-				const compileFile = (file) => this.compileTemplate(alias, file);
-				const compiledTemplates = getJSTFiles(fsSource).map(compileFile);
-				return Object.assign(result, ...compiledTemplates);
-			}, {});
-	}
-
-	/**
-	 * @override
-	 */
-	watchSources(codeSource) {
-		const aliasedSources = Array.from(codeSource.aliasedSources);
-		aliasedSources.forEach(([alias, fsSource]) => {
-			fsSource.on(IZBSourceProvider.EVENT_CHANGED, (filePath) => {
-				this._onChanged(alias, filePath);
-			});
-		});
+		this._cutejs.clientLibImportPath = 'cutejs-lib/cute-library';
 	}
 
 	/**
@@ -81,8 +57,33 @@ module.exports = class extends EventEmitter {
 	/**
 	 * @override
 	 */
-	getPublicDir() {
+	getSourcesDir() {
 		return path.join(__dirname, 'lib');
+	}
+
+	/**
+	 * @override
+	 */
+	generateCode() {
+		return Array.from(this._codeSource.aliasedSources)
+			.reduce((result, [alias, fsSource]) => {
+				const compileFile = (file) => this.compileTemplate(alias, file);
+				const compiledTemplates = getJSTFiles(fsSource).map(compileFile);
+				return Object.assign(result, ...compiledTemplates);
+			}, {});
+	}
+
+	/**
+	 * @override
+	 */
+	setCodeSource(codeSource) {
+		super.setCodeSource(codeSource);
+
+		for (const [alias, fsSource] of codeSource.aliasedSources) {
+			fsSource.on(ISourceProvider.EVENT_CHANGED, (filePath) => {
+				this._onChanged(alias, filePath);
+			});
+		}
 	}
 
 	/**
@@ -90,17 +91,20 @@ module.exports = class extends EventEmitter {
 	 */
 	getConfig() {
 		const clientLibPath = CuteJS.getClientLibraryPath();
-		const paths = fs.readdirSync(clientLibPath).map((file) => path.join(clientLibPath, file));
+		const paths = fse.readdirSync(clientLibPath).map((file) => path.join(clientLibPath, file));
 		const templatesPath = path.join(__dirname, 'templates');
 
 		return {
-			templateLocations: [templatesPath],
-			compilation: {
-				include: paths
-			},
-			aliases: {
-				'cutejs-lib': clientLibPath
-			}
+			templates: [templatesPath],
+			include: [
+				{
+					name: 'CuteJS client library',
+					modules: paths,
+					aliases: {
+						'cutejs-lib': clientLibPath
+					}
+				}
+			]
 		};
 	}
 
@@ -110,7 +114,7 @@ module.exports = class extends EventEmitter {
 	 * @return {?string}
 	 */
 	resolveAliasedFilePath(alias, filePath) {
-		const aliasedSources = this._zb.getCodeSource().aliasedSources;
+		const aliasedSources = this._codeSource.aliasedSources;
 		const fsSource = aliasedSources.get(alias);
 		if (!fsSource) {
 			return null;
@@ -128,7 +132,7 @@ module.exports = class extends EventEmitter {
 	compileTemplate(alias, filePath) {
 		const resultFilePath = this.resolveAliasedFilePath(alias, filePath);
 
-		return {[`${resultFilePath}.js`]: this._cutejs.compile(fs.readFileSync(filePath, 'utf-8'))};
+		return {[`${resultFilePath}.js`]: this._cutejs.compile(fse.readFileSync(filePath, 'utf-8'))};
 	}
 
 	/**
@@ -140,7 +144,7 @@ module.exports = class extends EventEmitter {
 		const changes = this._generateChanges(alias, filePath);
 
 		if (Object.keys(changes).length) {
-			this.emit(IZBExtension.EVENT_GENERATED, changes);
+			this.emit(AbstractExtension.EVENT_GENERATED, changes);
 		}
 	}
 

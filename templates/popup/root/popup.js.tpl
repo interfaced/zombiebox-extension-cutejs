@@ -1,4 +1,4 @@
-import AbstractCutePopup from 'cutejs/layers/abstract-cute-popup';
+import AbstractCutePopup from 'cutejs/layers/abstract-popup';
 import {render, Out} from 'generated/cutejs/<%= componentName %>/popups/<%= slug %>/<%= slug %>.jst';
 
 

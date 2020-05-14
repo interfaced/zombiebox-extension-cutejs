@@ -1,6 +1,6 @@
 # zombiebox-extension-cutejs
 
-[ZombieBox](https://zombiebox.tv) extension provides ability for using CuteJS template engine in zb projects.
+[ZombieBox](https://zombiebox.tv) CuteJS template engine extension.
 
 ## Usage
 

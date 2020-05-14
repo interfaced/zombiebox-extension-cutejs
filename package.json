@@ -1,40 +1,51 @@
 {
   "name": "zombiebox-extension-cutejs",
-  "description": "CuteJS ZombieBox extension",
-  "version": "1.0.0",
+  "description": "ZombieBox CuteJS template engine extension",
+  "version": "1.2.1",
   "license": "MIT",
-  "author": {
-    "name": "Interfaced",
-    "url": "http://interfaced.tv"
-  },
+  "author": "Interfaced (http://interfaced.tv)",
   "homepage": "https://github.com/interfaced/zombiebox-extension-cutejs",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:interfaced/zombiebox-extension-cutejs.git"
+  },
   "keywords": [
     "zombiebox",
     "extension",
     "templates",
     "cutejs"
   ],
+  "files": [
+    "lib/",
+    "templates/",
+    "index.js",
+    "CHANGELOG.md",
+    "MIGRATION.md",
+    "LICENSE"
+  ],
   "engines": {
-    "node": ">=6",
+    "node": ">=8.9",
     "npm": ">=5"
   },
   "scripts": {
-    "lint.code": "eslint index.js lib"
+    "lint": "eslint ."
   },
   "dependencies": {
-    "cutejs": "^2.0.0-alpha.1"
+    "cutejs": "^2.0.0",
+    "fs-extra": "^9.0.0"
   },
   "peerDependencies": {
-    "zombiebox": "^2.0.0-alpha.2"
+    "zombiebox": "^2.7.2"
   },
   "devDependencies": {
-    "eslint": "^5.7.0",
-    "eslint-config-interfaced": "^1.5.0",
-    "eslint-import-resolver-alias": "^1.1.2",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-interfaced": "^1.6.0",
-    "eslint-plugin-node": "^8.0.1",
-    "zombiebox": "^2.0.0-alpha.2"
+    "eslint": "^7.0.0",
+    "eslint-config-interfaced": "^2.0.0",
+    "eslint-import-resolver-zombiebox": "^1.0.1",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-interfaced": "^2.0.0",
+    "eslint-plugin-jsdoc": "^25.4.1",
+    "eslint-plugin-node": "^11.1.0",
+    "zombiebox": "^2.7.2"
   },
   "main": "index.js",
   "module": "./lib"

@@ -1,4 +1,4 @@
-import AbstractCuteWidget from 'cutejs/widgets/abstract-cute-widget';
+import AbstractCuteWidget from 'cutejs/widgets/abstract-widget';
 import {render, Out} from 'generated/cutejs/<%= componentName %>/widgets/<%= slug %>/<%= slug %>.jst';
 
 
