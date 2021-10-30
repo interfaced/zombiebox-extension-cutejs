@@ -6,12 +6,11 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+import path from 'path';
+import fse from 'fs-extra';
+import CuteJS from 'cutejs';
 
-const path = require('path');
-const fse = require('fs-extra');
-const CuteJS = require('cutejs');
-
-const {AbstractExtension, ISourceProvider} = require('zombiebox');
+import {AbstractExtension, ISourceProvider} from 'zombiebox';
 
 /**
  * @param {string} filePath
@@ -32,7 +31,7 @@ function getJSTFiles(source) {
 
 /**
  */
-module.exports = class extends AbstractExtension {
+export default class extends AbstractExtension {
 	/**
 	 */
 	constructor() {
@@ -58,7 +57,7 @@ module.exports = class extends AbstractExtension {
 	 * @override
 	 */
 	getSourcesDir() {
-		return path.join(__dirname, 'lib');
+		return (new URL('lib', import.meta.url)).pathname;
 	}
 
 	/**
@@ -92,7 +91,7 @@ module.exports = class extends AbstractExtension {
 	getConfig() {
 		const clientLibPath = CuteJS.getClientLibraryPath();
 		const paths = fse.readdirSync(clientLibPath).map((file) => path.join(clientLibPath, file));
-		const templatesPath = path.join(__dirname, 'templates');
+		const templatesPath = (new URL('templates', import.meta.url)).pathname;
 
 		return {
 			templates: [templatesPath],

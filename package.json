@@ -5,6 +5,7 @@
   "license": "MIT",
   "author": "Interfaced (http://interfaced.tv)",
   "homepage": "https://github.com/interfaced/zombiebox-extension-cutejs",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git@github.com:interfaced/zombiebox-extension-cutejs.git"
